@@ -1,36 +1,36 @@
-const https = require('https');
+const lighthouse = require('lighthouse');
+const chromeLauncher = require('chrome-launcher');
 
-const url = (
-    'https://www.googleapis.com/pagespeedonline/v5/runPagespeed' +
-    '?url=https://zk-phi.github.io/' +
-    '&strategy=mobile'
-);
-
-https.get(url, (res) => {
-    let buf = '';
-    res.on('data', (d) => {
-        buf += d;
+const runLighthouse = async () => {
+    const chrome = await chromeLauncher.launch({
+        chromeFlags: ['--headless']
     });
-    res.on('end', (d) => {
-        processResult(JSON.parse(buf));
+
+    const runnerResult = await lighthouse('https://zk-phi.github.io/', {
+        output: 'json',
+        onlyCategories: ['performance'],
+        port: chrome.port
     });
-});
 
-function processResult (res) {
-    const lhres = res.lighthouseResult;
+    await chrome.kill();
+    return JSON.parse(runnerResult.report);
+};
 
+const processResult = (res) => {
     const loadtime = Math.floor(
-        lhres.audits["network-requests"].details.items[0].endTime
+        res.audits["network-requests"].details.items[0].endTime
     );
 
     console.log([
         new Date().toLocaleString("ja-JP"),
-        Math.floor(lhres.audits["network-requests"].details.items[0].endTime),
-        lhres.audits.metrics.details.items[0].observedDomContentLoaded,
-        lhres.audits.metrics.details.items[0].observedFirstPaint,
-        lhres.audits.metrics.details.items[0].observedFirstContentfulPaint,
-        lhres.audits.metrics.details.items[0].observedLargestContentfulPaint,
-        lhres.audits.metrics.details.items[0].observedFirstVisualChange,
-        lhres.audits.metrics.details.items[0].observedLastVisualChange,
+        Math.floor(res.audits["network-requests"].details.items[0].endTime),
+        res.audits.metrics.details.items[0].observedDomContentLoaded,
+        res.audits.metrics.details.items[0].observedFirstPaint,
+        res.audits.metrics.details.items[0].observedFirstContentfulPaint,
+        res.audits.metrics.details.items[0].observedLargestContentfulPaint,
+        res.audits.metrics.details.items[0].observedFirstVisualChange,
+        res.audits.metrics.details.items[0].observedLastVisualChange,
     ].join("\t"));
 }
+
+(async () => processResult(await runLighthouse()))();
