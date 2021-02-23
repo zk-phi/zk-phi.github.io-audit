@@ -1,6 +1,7 @@
 name: Run Speed Insights
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 * * * *'
 
