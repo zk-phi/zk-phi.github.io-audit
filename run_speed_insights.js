@@ -30,6 +30,7 @@ const processResult = (res) => {
         res.audits.metrics.details.items[0].observedLargestContentfulPaint,
         res.audits.metrics.details.items[0].observedFirstVisualChange,
         res.audits.metrics.details.items[0].observedLastVisualChange,
+        res.audits.metrics.details.items[0].observedCumulativeLayoutShift,
     ].join("\t"));
 }
 

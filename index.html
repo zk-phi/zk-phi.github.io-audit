@@ -23,42 +23,45 @@ var xhr = new XMLHttpRequest();
 xhr.open("GET", "res.tsv", true);
 xhr.send(null);
 xhr.onload = function () {
-    var lines = xhr.responseText.split("\n");
+    var lines = xhr.responseText.split("\n").filter((line) => (
+        !!line.length
+    )).map((line) => (
+        line.split("\t")
+    ));
 
-    var colLabels = lines.shift().split("\t");
-    colLabels.shift();
+    var colLabels = lines.shift();
+    colLabels.shift(); // drop "Timestamp"
 
-    var setLabels = [];
-    var datasets = colLabels.map((label) => []);
-
-    lines.forEach((line) => {
-        if (line !== "") {
-            var cols = line.split("\t");
-            cols.forEach((col, ix) => {
-                if (ix == 0) setLabels.push(col);
-                else datasets[ix - 1].push(col);
-            });
-        }
-    });
-
-    datasets.pop();
+    var setLabels = lines.map((line) => line.shift()); // Timestamps
+    var datasets = colLabels.map(() => lines.map((line) => line.shift()));
 
     new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: {
             labels: setLabels,
-            datasets: datasets.map((ds, ix) => ({
+            datasets: [0, 1, 2, 3, 4, 5, 7].map((ix) => ({
                 label: colLabels[ix],
-                data: ds
+                yAxisID: ix == 7 ? 'B' : 'A',
+                data: datasets[ix],
+                backgroundColor: ix == 7 ? 'rgba(0, 128, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)',
             }))
         },
         options: {
             scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
+                yAxes: [
+                    {
+                        id: 'A',
+                        type: 'linear',
+                        position: 'left',
+                        ticks: { beginAtZero: true, suggestedMax: 1000 }
+                    },
+                    {
+                        id: 'B',
+                        type: 'linear',
+                        position: 'right',
+                        ticks: { beginAtZero: true, suggestedMax: 0.5 }
                     }
-                }]
+                ]
             }
         }
     });
