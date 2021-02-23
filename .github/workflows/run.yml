@@ -1,0 +1,19 @@
+name: Run Speed Insights
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - run: sh run.sh
+      - run: |
+          git config --local user.email "_"
+          git config --local user.name "Github Actions"
+          git add res.tsv
+          git commit -m "Update res.tsv"
+          git push -f origin master
