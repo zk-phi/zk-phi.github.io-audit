@@ -35,16 +35,45 @@ xhr.onload = function () {
     var setLabels = lines.map((line) => line.shift()); // Timestamps
     var datasets = colLabels.map(() => lines.map((line) => line.shift()));
 
+    var barColors = [
+        'rgba(255, 0, 0, 0.15)',
+        'rgba(128, 128, 0, 0.15)',
+        'rgba(0, 255, 0, 0.15)',
+        'rgba(0, 128, 128, 0.15)',
+        'rgba(0, 0, 255, 0.15)',
+        'rgba(128, 0, 128, 0.15)',
+    ];
+
     new Chart(canvas.getContext('2d'), {
         type: 'line',
         data: {
             labels: setLabels,
-            datasets: [0, 1, 2, 3, 4, 5, 7].map((ix) => ({
-                label: colLabels[ix],
-                yAxisID: ix == 7 ? 'B' : 'A',
-                data: datasets[ix],
-                backgroundColor: ix == 7 ? 'rgba(0, 128, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)',
-            }))
+            datasets: [
+                ...[0, 4, 6].map((ix) => ({
+                    label: colLabels[ix],
+                    yAxisID: 'A',
+                    data: datasets[ix],
+                    borderColor: 'rgba(255, 0, 128, 0.3)',
+                    backgroundColor: 'rgba(255, 0, 128, 0.3)',
+                    fill: false,
+                })),
+                {
+                    label: colLabels[7],
+                    yAxisID: 'B',
+                    data: datasets[7],
+                    borderColor: 'rgba(0, 128, 255, 0.3)',
+                    backgroundColor: 'rgba(0, 128, 255, 0.3)',
+                    fill: false,
+                },
+                ...[12, 8, 10, 13, 11, 9].map((ix, i) => ({
+                    type: 'bar',
+                    label: colLabels[ix],
+                    yAxisID: 'A',
+                    data: datasets[ix],
+                    backgroundColor: barColors[i],
+                    stack: 'A',
+                }))
+            ]
         },
         options: {
             scales: {
