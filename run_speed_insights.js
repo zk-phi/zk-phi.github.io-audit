@@ -16,12 +16,17 @@ const runLighthouse = async () => {
     return JSON.parse(runnerResult.report);
 };
 
-const processResult = (res) => {
+const extractFields = (res) => {
     const loadtime = Math.floor(
         res.audits["network-requests"].details.items[0].endTime
     );
 
-    console.log([
+    const brokeDown = res.audits["mainthread-work-breakdown"].details.items.reduce((l, r) => {
+        l[r.group] = r.duration;
+        return l;
+    }, {});
+
+    return [
         new Date().toLocaleString("ja-JP"),
         Math.floor(res.audits["network-requests"].details.items[0].endTime),
         res.audits.metrics.details.items[0].observedDomContentLoaded,
@@ -31,7 +36,13 @@ const processResult = (res) => {
         res.audits.metrics.details.items[0].observedFirstVisualChange,
         res.audits.metrics.details.items[0].observedLastVisualChange,
         res.audits.metrics.details.items[0].observedCumulativeLayoutShift,
-    ].join("\t"));
+        Math.floor(brokeDown.styleLayout),
+        Math.floor(brokeDown.other),
+        Math.floor(brokeDown.paintCompositeRender),
+        Math.floor(brokeDown.scriptEvaluation),
+        Math.floor(brokeDown.parseHTML),
+        Math.floor(brokeDown.scriptParseCompile),
+    ];
 }
 
-(async () => processResult(await runLighthouse()))();
+(async () => console.log(extractFields(await runLighthouse()).join('\t')))();

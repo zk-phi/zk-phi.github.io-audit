@@ -1,4 +1,4 @@
-Timestamp	HTML Fetched	DOM Content Loaded	First Paint	First Contentful Paint	Largest Contentful Paint	First Visual Change	Last Visual Change	Cumulative Layout Shift
+Timestamp	HTML Fetched	DOM Content Loaded	First Paint	First Contentful Paint	Largest Contentful Paint	First Visual Change	Last Visual Change	Cumulative Layout Shift	Style & Layout	Other Tasks	Rendering	Scripting	Doc Parsing	Script Parsing
 2021/2/23 14:09:59	83	218	198	198	198	197	313
 2021/2/23 14:12:04	262	606	580	580	580	588	738
 2021/2/23 15:15:04	377	844	776	776	776	787	970
