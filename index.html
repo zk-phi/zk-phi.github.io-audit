@@ -15,6 +15,26 @@
     <canvas id="chart"></canvas>
 
     <script>
+function factorByDay (data) {
+    var offset = data.length % 24;
+    var count = Math.floor(data.length / 24);
+
+    var res = [];
+    for (var i = 0; i < count; i++) {
+        res.push(data.slice(offset + i * 24, offset + (i + 1) * 24));
+    }
+
+    return res;
+}
+
+function mean (data) {
+    return data.sort((a, b) => a < b ? -1 : a == b ? 0 : 1)[Math.floor(data.length / 2)];
+}
+
+function ave (data) {
+    return data.reduce((l, r) => Number(l) + Number(r), 0) / data.length;
+}
+
 var canvas = document.getElementById('chart');
 canvas.width = 3000;
 canvas.height = 1000;
@@ -34,6 +54,14 @@ xhr.onload = function () {
 
     var setLabels = lines.map((line) => line.shift()); // Timestamps
     var datasets = colLabels.map(() => lines.map((line) => line.shift()));
+
+    var match = window.location.href.match(/\?([^=]+)(=(.*))?$/);
+    if (match && match[1] === "factor") {
+        setLabels = factorByDay(setLabels).map((day) => day[0]);
+        datasets = datasets.map((dataset) => (
+            factorByDay(dataset).map(match[3] == "ave" ? ave : mean)
+        ));
+    }
 
     var barColors = [
         'rgba(255, 0, 0, 0.15)',
