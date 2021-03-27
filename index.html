@@ -20,6 +20,8 @@
     <canvas id="chart"></canvas>
 
     <script>
+var MAX_NUM_DATA = 100;
+
 function factorByDay (data) {
     var offset = data.length % 24;
     var count = Math.floor(data.length / 24);
@@ -67,6 +69,15 @@ xhr.onload = function () {
             factorByDay(dataset).map(match[3] == "ave" ? ave : mean)
         ));
     }
+
+    if (setLabels.length > MAX_NUM_DATA) {
+        setLabels.splice(0, setLabels.length - MAX_NUM_DATA);
+    }
+    datasets.forEach((data) => {
+        if (data.length > MAX_NUM_DATA) {
+            data.splice(0, data.length - MAX_NUM_DATA);
+        }
+    });
 
     var barColors = [
         'rgba(255, 0, 0, 0.15)',
